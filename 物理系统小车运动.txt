@@ -1,0 +1,54 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class xiaoche : MonoBehaviour
+{
+    [Tooltip("test测试")] // 注解
+    public float moveForce = 0;
+    public float stopForce = 5; // 刹车力度
+    public float backForce = 10; // 倒车力度
+    Rigidbody rb;
+    // Start is called before the first frame update
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+    void FixedUpdate()
+    {
+        float axisV = Input.GetAxis("Vertical");
+        Vector3 velocity = rb.velocity; //当前速度
+        //velocity.magnitude 速率。表示小车可以无限加速度
+        //velocity.normalized 速度的方向
+        if (axisV > 0 ) // 加油门
+        {
+            float maxSpeed = 5;
+            //rb.AddForce(0, 0, moveForce); // 世界坐标系
+            if (velocity.magnitude < maxSpeed)
+            {
+                //Debug.Log(velocity.magnitude); // 加速度
+                rb.AddRelativeForce(0, 0, moveForce); // 自己坐标系
+            }
+        } else if (axisV < 0) // 刹车
+        {
+            float deltaSpeed = stopForce * Time.fixedDeltaTime; // 5 * 0.02
+            Vector3 dir = velocity.normalized;
+            if (velocity.magnitude > deltaSpeed)
+            {
+                Debug.Log("刹车");
+                rb.AddRelativeForce(dir * (-1) * deltaSpeed, ForceMode.VelocityChange); // 自己坐标系
+            }
+            
+        }
+        if (Input.GetKey(KeyCode.Space)) // 空格键
+        {
+            rb.AddRelativeForce(0,0,-backForce, ForceMode.Force); // 自己坐标系
+        }
+    }
+}
